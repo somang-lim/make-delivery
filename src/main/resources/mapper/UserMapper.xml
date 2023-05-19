@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sm.makedelivery.mapper.UserMapper">
+
+    <select id="isExistsId" resultType="boolean">
+        SELECT EXISTS
+        (SELECT id FROM USER WHERE id = #{id})
+    </select>
+
+    <insert id="insertUser" parameterType="com.sm.makedelivery.dto.UserDTO">
+        INSERT INTO USER(id, password, email, name, phone, address, level)
+        VALUES (#{id}, #{password}, #{email}, #{name}, #{phone}, #{address}, #{level})
+    </insert>
+
+</mapper>
