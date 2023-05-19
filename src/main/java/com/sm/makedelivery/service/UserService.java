@@ -1,6 +1,9 @@
 package com.sm.makedelivery.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sm.makedelivery.dto.UserDTO;
 import com.sm.makedelivery.exception.DuplicatedIdException;
@@ -21,12 +24,14 @@ import lombok.RequiredArgsConstructor;
  */
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
 	private final UserMapper userMapper;
 
 
+	@Transactional
 	public void signUp(UserDTO user) {
 		if (isExistsId(user.getId())) {
 			throw new DuplicatedIdException("Same id exists id: " + user.getId());
@@ -56,4 +61,19 @@ public class UserService {
 		return userMapper.isExistsId(id);
 	}
 
+	public Optional<UserDTO> findUserByIdAndPassword(String id, String password) {
+		Optional<UserDTO> user = Optional.ofNullable(userMapper.selectUserById(id));
+
+		if (!user.isPresent()) {
+			return Optional.empty();
+		}
+
+		boolean isSamePassword = PasswordEncryptor.isMatch(password, user.get().getPassword());
+
+		if (!isSamePassword) {
+			return Optional.empty();
+		}
+
+		return user;
+	}
 }

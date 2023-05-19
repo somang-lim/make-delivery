@@ -1,5 +1,7 @@
 package com.sm.makedelivery.mapper;
 
+import java.util.Optional;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.sm.makedelivery.dto.UserDTO;
@@ -15,4 +17,7 @@ public interface UserMapper {
 	void insertUser(UserDTO user);
 
 	boolean isExistsId(String id);
+
+	UserDTO selectUserById(String id);
+
 }

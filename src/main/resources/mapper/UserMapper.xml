@@ -14,4 +14,9 @@
         VALUES (#{id}, #{password}, #{email}, #{name}, #{phone}, #{address}, #{level})
     </insert>
 
+    <select id="selectUserById" resultType="com.sm.makedelivery.dto.UserDTO">
+        SELECT id, password, email, name, phone, address, level, createdAt, updatedAt
+        FROM USER WHERE id = #{id}
+    </select>
+
 </mapper>
