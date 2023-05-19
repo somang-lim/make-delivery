@@ -1,7 +1,11 @@
 package com.sm.makedelivery.controller;
 
+import static com.sm.makedelivery.annotation.LoginCheck.*;
 import static com.sm.makedelivery.utils.utils.ResponseEntityConstants.RESPONSE_CONFLICT;
+import static com.sm.makedelivery.utils.utils.ResponseEntityConstants.RESPONSE_NOT_FOUND;
 import static com.sm.makedelivery.utils.utils.ResponseEntityConstants.RESPONSE_OK;
+
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sm.makedelivery.annotation.LoginCheck;
 import com.sm.makedelivery.dto.UserDTO;
+import com.sm.makedelivery.service.LoginService;
 import com.sm.makedelivery.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final LoginService loginService;
 
 
 	@PostMapping
@@ -49,6 +56,25 @@ public class UserController {
 		} else {
 			return RESPONSE_CONFLICT;
 		}
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<Void> login(String id, String password) {
+		Optional<UserDTO> user = userService.findUserByIdAndPassword(id, password);
+
+		if (user.isPresent()) {
+			loginService.loginUser(user.get().getId());
+			return RESPONSE_OK;
+		} else {
+			return RESPONSE_NOT_FOUND;
+		}
+	}
+
+	@GetMapping("/logout")
+	@LoginCheck(userLevel = UserLevel.USER)
+	public ResponseEntity<Void> logout() {
+		loginService.logoutUser();
+		return RESPONSE_OK;
 	}
 
 }
