@@ -4,6 +4,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: delivery
     password: 0987
+  redis:
+    host: localhost
+    password: 0987
+    port: 6379
+  session:
+    store-type: redis
+
 
 mybatis:
   # mapper가 위치한 경로 설정
