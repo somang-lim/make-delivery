@@ -19,4 +19,13 @@
         FROM USER WHERE id = #{id}
     </select>
 
+    <delete id="deleteUser">
+        DELETE FROM USER WHERE id = #{id}
+    </delete>
+
+    <update id="updateUserPassword" parameterType="String">
+        UPDATE USER SET password = #{newPassword}, updatedAt = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
 </mapper>

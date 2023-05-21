@@ -1,9 +1,9 @@
 package com.sm.makedelivery.controller;
 
 import static com.sm.makedelivery.annotation.LoginCheck.*;
-import static com.sm.makedelivery.utils.utils.ResponseEntityConstants.RESPONSE_CONFLICT;
-import static com.sm.makedelivery.utils.utils.ResponseEntityConstants.RESPONSE_NOT_FOUND;
-import static com.sm.makedelivery.utils.utils.ResponseEntityConstants.RESPONSE_OK;
+import static com.sm.makedelivery.utils.ResponseEntityConstants.RESPONSE_CONFLICT;
+import static com.sm.makedelivery.utils.ResponseEntityConstants.RESPONSE_NOT_FOUND;
+import static com.sm.makedelivery.utils.ResponseEntityConstants.RESPONSE_OK;
 
 import java.util.Optional;
 
