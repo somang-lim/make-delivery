@@ -1,4 +1,4 @@
-package com.sm.makedelivery.utils.utils;
+package com.sm.makedelivery.utils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

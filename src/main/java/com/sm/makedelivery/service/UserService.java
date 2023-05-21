@@ -61,6 +61,17 @@ public class UserService {
 		return userMapper.isExistsId(id);
 	}
 
+	@Transactional
+	public void deleteUser(String id) {
+		userMapper.deleteUser(id);
+	}
+
+	@Transactional
+	public void changeUserPassword(String id, String newPassword) {
+		String encryptedPassword = PasswordEncryptor.encrypt(newPassword);
+		userMapper.updateUserPassword(id, encryptedPassword);
+	}
+
 	public Optional<UserDTO> findUserByIdAndPassword(String id, String password) {
 		Optional<UserDTO> user = Optional.ofNullable(userMapper.selectUserById(id));
 
@@ -76,4 +87,5 @@ public class UserService {
 
 		return user;
 	}
+
 }
