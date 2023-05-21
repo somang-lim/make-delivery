@@ -1,12 +1,14 @@
 package com.sm.makedelivery.service;
 
 import java.util.Optional;
+import java.util.logging.Handler;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sm.makedelivery.dto.UserDTO;
 import com.sm.makedelivery.exception.DuplicatedIdException;
+import com.sm.makedelivery.exception.NotExistsIdException;
 import com.sm.makedelivery.mapper.UserMapper;
 import com.sm.makedelivery.utils.PasswordEncryptor;
 
@@ -63,6 +65,9 @@ public class UserService {
 
 	@Transactional
 	public void deleteUser(String id) {
+		if (!isExistsId(id)) {
+			throw new NotExistsIdException("Not Exists id");
+		}
 		userMapper.deleteUser(id);
 	}
 
@@ -70,6 +75,10 @@ public class UserService {
 	public void changeUserPassword(String id, String newPassword) {
 		String encryptedPassword = PasswordEncryptor.encrypt(newPassword);
 		userMapper.updateUserPassword(id, encryptedPassword);
+	}
+
+	public UserDTO findUserById(String id) {
+		return userMapper.selectUserById(id);
 	}
 
 	public Optional<UserDTO> findUserByIdAndPassword(String id, String password) {
@@ -87,5 +96,4 @@ public class UserService {
 
 		return user;
 	}
-
 }
