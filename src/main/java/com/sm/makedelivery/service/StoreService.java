@@ -64,4 +64,14 @@ public class StoreService {
 		return storeMapper.selectStore(storeId, ownerId);
 	}
 
+	@Transactional
+	public void closeMyStore(long storeId) {
+		storeMapper.closeMyStore(storeId);
+	}
+
+	@Transactional
+	public void openMyStore(long storeId) {
+		storeMapper.openMyStore(storeId);
+	}
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,24 @@ public class StoreController {
 		StoreDTO store = storeService.getMyStore(storeId, ownerId);
 
 		return ResponseEntity.ok().body(store);
+	}
+
+	@PatchMapping("/{storeId}/closed")
+	@LoginCheck(userLevel = UserLevel.OWNER)
+	public ResponseEntity<Void> closeMyStore(@PathVariable long storeId, @CurrentUserId String ownerId) {
+		storeService.validateMyStore(storeId, ownerId);
+		storeService.closeMyStore(storeId);
+
+		return RESPONSE_OK;
+	}
+
+	@PatchMapping("/{storeId}/opened")
+	@LoginCheck(userLevel = UserLevel.OWNER)
+	public ResponseEntity<Void> openMyStore(@PathVariable long storeId, @CurrentUserId String ownerId) {
+		storeService.validateMyStore(storeId, ownerId);
+		storeService.openMyStore(storeId);
+
+		return RESPONSE_OK;
 	}
 
 }

@@ -24,4 +24,14 @@
         (SELECT name FROM STORE WHERE id = #{storeId} AND owner_id = #{ownerId})
     </select>
 
+    <update id="closeMyStore">
+        UPDATE STORE SET open_status= 'closed'
+        WHERE id = #{storeId}
+    </update>
+
+    <update id="openMyStore">
+        UPDATE STORE SET open_status = 'opened'
+        WHERE id = #{storeId}
+    </update>
+
 </mapper>
