@@ -17,6 +17,7 @@ public class OptionService {
 
 	private final OptionMapper optionMapper;
 
+
 	@Transactional
 	public void registerOptionList(List<OptionDTO> optionList) {
 		optionMapper.insertOptionList(optionList);
@@ -30,4 +31,5 @@ public class OptionService {
 	public void deleteOptionList(List<OptionDTO> optionList) {
 		optionMapper.deleteOptionList(optionList);
 	}
+
 }

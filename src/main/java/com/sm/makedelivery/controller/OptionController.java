@@ -30,6 +30,7 @@ public class OptionController {
 	private final OptionService optionService;
 	private final StoreService storeService;
 
+
 	@PostMapping
 	@LoginCheck(userLevel = UserLevel.OWNER)
 	public void registerOptionList(@RequestBody List<OptionDTO> optionList, @PathVariable long storeId, @CurrentUserId String ownerId) {

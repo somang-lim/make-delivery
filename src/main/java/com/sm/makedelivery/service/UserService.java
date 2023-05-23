@@ -1,7 +1,6 @@
 package com.sm.makedelivery.service;
 
 import java.util.Optional;
-import java.util.logging.Handler;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,4 +95,5 @@ public class UserService {
 
 		return user;
 	}
+
 }
