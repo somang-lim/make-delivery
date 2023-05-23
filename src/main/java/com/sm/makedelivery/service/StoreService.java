@@ -39,6 +39,7 @@ public class StoreService {
 			.address(store.getAddress())
 			.ownerId(ownerId)
 			.introduction(store.getIntroduction())
+			.categoryId(store.getCategoryId())
 			.build();
 
 		return newStore;
