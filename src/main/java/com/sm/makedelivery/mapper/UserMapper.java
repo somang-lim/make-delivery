@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.sm.makedelivery.dto.UserDTO;
+import com.sm.makedelivery.dto.UserInfoDTO;
 
 /*
 	@Mapper
@@ -23,4 +24,7 @@ public interface UserMapper {
 	void deleteUser(String id);
 
 	void updateUserPassword(String id, String newPassword);
+
+	UserInfoDTO selectUserInfo(String userId);
+
 }

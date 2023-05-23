@@ -19,6 +19,11 @@
         FROM USER WHERE id = #{id}
     </select>
 
+    <select id="selectUserInfo" resultType="com.sm.makedelivery.dto.UserInfoDTO">
+        SELECT id, name, phone, address
+        FROM USER WHERE id = #{id}
+    </select>
+
     <delete id="deleteUser">
         DELETE FROM USER WHERE id = #{id}
     </delete>

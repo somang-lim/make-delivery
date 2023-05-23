@@ -2,6 +2,8 @@ package com.sm.makedelivery.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +30,7 @@ public class CartController {
 
 	@PostMapping
 	@LoginCheck(userLevel = UserLevel.USER)
-	public void registerMenuInCart(@CurrentUserId String userId, @RequestBody CartItemDTO cart) {
+	public void registerMenuInCart(@CurrentUserId String userId, @Valid @RequestBody CartItemDTO cart) {
 		cartService.registerMenuInCart(userId, cart);
 	}
 
