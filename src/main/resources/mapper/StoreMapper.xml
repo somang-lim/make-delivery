@@ -5,8 +5,8 @@
 <mapper namespace="com.sm.makedelivery.mapper.StoreMapper">
 
     <insert id="insertStore" parameterType="com.sm.makedelivery.dto.StoreDTO">
-        INSERT INTO STORE(name, phone, address, owner_id, introduction)
-        VALUES (#{name}, #{phone}, #{address}, #{ownerId}, #{introduction})
+        INSERT INTO STORE(name, phone, address, owner_id, category_id, introduction)
+        VALUES (#{name}, #{phone}, #{address}, #{ownerId}, #{categoryId}, #{introduction})
     </insert>
 
     <select id="selectStoreList" parameterType="String" resultType="com.sm.makedelivery.dto.StoreDTO">
