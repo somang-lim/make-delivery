@@ -44,7 +44,7 @@ public class StoreController {
 
 	@GetMapping("/{storeId}")
 	@LoginCheck(userLevel = UserLevel.OWNER)
-	public ResponseEntity<StoreDTO> getMyStore(@PathVariable String storeId, @CurrentUserId String ownerId) {
+	public ResponseEntity<StoreDTO> getMyStore(@PathVariable Long storeId, @CurrentUserId String ownerId) {
 		storeService.validateMyStore(storeId, ownerId);
 		StoreDTO store = storeService.getMyStore(storeId, ownerId);
 
