@@ -27,6 +27,7 @@ public class StoreController {
 
 	private final StoreService storeService;
 
+
 	@PostMapping
 	@LoginCheck(userLevel = UserLevel.OWNER)
 	public ResponseEntity<Void> insertStore(StoreDTO store, @CurrentUserId String ownerId) {

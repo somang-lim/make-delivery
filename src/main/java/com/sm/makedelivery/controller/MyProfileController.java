@@ -41,5 +41,4 @@ public class MyProfileController {
 		return RESPONSE_OK;
 	}
 
-
 }

@@ -2,11 +2,8 @@ package com.sm.makedelivery.service;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sm.makedelivery.dto.UserDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,6 +40,7 @@ public class SessionLoginService implements LoginService {
 	public String getCurrentUser() {
 		return (String) session.getAttribute(USER_ID);
 	}
+
 }
 
 /*
