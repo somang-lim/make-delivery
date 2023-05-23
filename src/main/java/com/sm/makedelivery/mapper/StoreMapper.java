@@ -17,4 +17,8 @@ public interface StoreMapper {
 
 	StoreDTO selectStore(Long storeId, String ownerId);
 
+	void closeMyStore(long storeId);
+
+	void openMyStore(long storeId);
+
 }

@@ -24,7 +24,7 @@ public class MenuService {
 		menuMapper.insertMenu(menu);
 	}
 
-	public MenuDTO setStoreId(MenuDTO menu, Long storeId) {
+	public MenuDTO setStoreId(MenuDTO menu, long storeId) {
 		MenuDTO newMenu = MenuDTO.builder()
 			.name(menu.getName())
 			.price(menu.getPrice())
@@ -38,14 +38,14 @@ public class MenuService {
 	}
 
 	@Transactional
-	public void deleteMenu(Long menuId) {
+	public void deleteMenu(long menuId) {
 		if (!isExistsId(menuId)) {
 			throw new NotExistsIdException("Not Exists id = " + menuId);
 		}
 		menuMapper.deleteMenu(menuId);
 	}
 
-	private boolean isExistsId(Long menuId) {
+	private boolean isExistsId(long menuId) {
 		return menuMapper.isExistsId(menuId);
 	}
 

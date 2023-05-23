@@ -31,7 +31,7 @@ public class MenuController {
 
 	@PostMapping
 	@LoginCheck(userLevel = UserLevel.OWNER)
-	public void insertMenu(MenuDTO menu, @PathVariable Long storeId, @CurrentUserId String ownerId) {
+	public void insertMenu(MenuDTO menu, @PathVariable long storeId, @CurrentUserId String ownerId) {
 		storeService.validateMyStore(storeId, ownerId);
 
 		MenuDTO newMenu = menuService.setStoreId(menu, storeId);
@@ -40,7 +40,7 @@ public class MenuController {
 
 	@DeleteMapping("/{menuId}")
 	@LoginCheck(userLevel = UserLevel.OWNER)
-	public void deleteMenu(@PathVariable Long menuId, @PathVariable Long storeId, @CurrentUserId String ownerId) {
+	public void deleteMenu(@PathVariable long menuId, @PathVariable long storeId, @CurrentUserId String ownerId) {
 		storeService.validateMyStore(storeId, ownerId);
 
 		menuService.deleteMenu(menuId);
