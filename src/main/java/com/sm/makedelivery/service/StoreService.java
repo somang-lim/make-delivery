@@ -48,11 +48,11 @@ public class StoreService {
 		return storeMapper.selectStoreList(ownerId);
 	}
 
-	public boolean isMyStore(Long storeId, String ownerId) {
+	public boolean isMyStore(long storeId, String ownerId) {
 		return storeMapper.isMyStore(storeId, ownerId);
 	}
 
-	public void validateMyStore(Long storeId, String ownerId) {
+	public void validateMyStore(long storeId, String ownerId) {
 		boolean isMyStore = isMyStore(storeId, ownerId);
 
 		if (!isMyStore) {
@@ -60,7 +60,7 @@ public class StoreService {
 		}
 	}
 
-	public StoreDTO getMyStore(Long storeId, String ownerId) {
+	public StoreDTO getMyStore(long storeId, String ownerId) {
 		return storeMapper.selectStore(storeId, ownerId);
 	}
 
