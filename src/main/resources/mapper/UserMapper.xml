@@ -15,7 +15,7 @@
     </insert>
 
     <select id="selectUserById" resultType="com.sm.makedelivery.dto.UserDTO">
-        SELECT id, password, email, name, phone, address, level, createdAt, updatedAt
+        SELECT id, password, email, name, phone, address, level, created_at, updated_at
         FROM USER WHERE id = #{id}
     </select>
 
@@ -24,7 +24,7 @@
     </delete>
 
     <update id="updateUserPassword" parameterType="String">
-        UPDATE USER SET password = #{newPassword}, updatedAt = CURRENT_TIMESTAMP
+        UPDATE USER SET password = #{newPassword}, updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id}
     </update>
 
