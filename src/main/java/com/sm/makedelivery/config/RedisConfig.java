@@ -8,11 +8,14 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.sm.makedelivery.dto.CartItemDTO;
 
 @Configuration
 public class RedisConfig {
@@ -38,24 +41,6 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public StringRedisTemplate stringRedisTemplate() {
-		StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
-
-		stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
-		stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
-		stringRedisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-		stringRedisTemplate.setDefaultSerializer(new StringRedisSerializer());
-		stringRedisTemplate.afterPropertiesSet();
-
-		return stringRedisTemplate;
-	}
-
-	@Bean
-	public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
-		return new GenericJackson2JsonRedisSerializer();
-	}
-
-	@Bean
 	public RedisCacheManager redisCacheManager() {
 		RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
 			.defaultCacheConfig()
@@ -73,6 +58,37 @@ public class RedisConfig {
 			.fromConnectionFactory(redisConnectionFactory())
 			.cacheDefaults(redisCacheConfiguration)
 			.build();
+	}
+
+	@Bean
+	public RedisTemplate<String, CartItemDTO> cartItemDTORedisTemplate() {
+		GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+
+		RedisTemplate<String, CartItemDTO> redisTemplate = new RedisTemplate<>();
+
+		redisTemplate.setConnectionFactory(redisConnectionFactory());
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		redisTemplate.setValueSerializer(genericJackson2JsonRedisSerializer);
+
+		return redisTemplate;
+	}
+
+	@Bean
+	public StringRedisTemplate stringRedisTemplate() {
+		StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+
+		stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
+		stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
+		stringRedisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+		stringRedisTemplate.setDefaultSerializer(new StringRedisSerializer());
+		stringRedisTemplate.afterPropertiesSet();
+
+		return stringRedisTemplate;
+	}
+
+	@Bean
+	public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
+		return new GenericJackson2JsonRedisSerializer();
 	}
 
 }
