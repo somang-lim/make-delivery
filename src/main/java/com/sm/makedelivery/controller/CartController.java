@@ -39,7 +39,7 @@ public class CartController {
 	public ResponseEntity<List<CartItemDTO>> loadCart(@CurrentUserId String userId) {
 		List<CartItemDTO> cartList = cartService.loadCart(userId);
 
-		return ResponseEntity.ok().body(cartList);
+		return ResponseEntity.ok(cartList);
 	}
 
 	@DeleteMapping
