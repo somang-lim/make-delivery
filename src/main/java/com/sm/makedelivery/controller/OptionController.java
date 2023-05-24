@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/stores/{storeId}/menus/{menuId}/options")
 @RequiredArgsConstructor
-@Slf4j
 public class OptionController {
 
 	private final OptionService optionService;
@@ -34,7 +33,6 @@ public class OptionController {
 	@PostMapping
 	@LoginCheck(userLevel = UserLevel.OWNER)
 	public void registerOptionList(@RequestBody List<OptionDTO> optionList, @PathVariable long storeId, @CurrentUserId String ownerId) {
-		log.info("optionList: " + optionList);
 		storeService.validateMyStore(storeId, ownerId);
 		optionService.registerOptionList(optionList);
 	}
@@ -43,7 +41,7 @@ public class OptionController {
 	public ResponseEntity<List<OptionDTO>> loadOptionList(@PathVariable long menuId) {
 		List<OptionDTO> optionList = optionService.loadOptionList(menuId);
 
-		return ResponseEntity.ok().body(optionList);
+		return ResponseEntity.ok(optionList);
 	}
 
 	@DeleteMapping

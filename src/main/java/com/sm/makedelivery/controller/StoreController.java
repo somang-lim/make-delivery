@@ -41,7 +41,7 @@ public class StoreController {
 	public ResponseEntity<List<StoreDTO>> getMyAllStore(@CurrentUserId String ownerId) {
 		List<StoreDTO> stores = storeService.getMyAllStore(ownerId);
 
-		return ResponseEntity.ok().body(stores);
+		return ResponseEntity.ok(stores);
 	}
 
 	@GetMapping("/{storeId}")
@@ -50,7 +50,7 @@ public class StoreController {
 		storeService.validateMyStore(storeId, ownerId);
 		StoreDTO store = storeService.getMyStore(storeId, ownerId);
 
-		return ResponseEntity.ok().body(store);
+		return ResponseEntity.ok(store);
 	}
 
 	@PatchMapping("/{storeId}/closed")

@@ -50,7 +50,7 @@ public class MenuController {
 	public ResponseEntity<List<MenuDTO>> loadStoreMenu(@PathVariable String storeId) {
 		List<MenuDTO> menuList = menuService.loadStoreMenu(storeId);
 
-		return ResponseEntity.ok().body(menuList);
+		return ResponseEntity.ok(menuList);
 	}
 
 }

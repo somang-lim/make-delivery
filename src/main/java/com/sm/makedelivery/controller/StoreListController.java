@@ -25,21 +25,21 @@ public class StoreListController {
 	public ResponseEntity<List<StoreCategoryDTO>> loadStoreCategory() {
 		List<StoreCategoryDTO> categoryList = storeListService.loadStoreCategory();
 
-		return ResponseEntity.ok().body(categoryList);
+		return ResponseEntity.ok(categoryList);
 	}
 
 	@GetMapping(params = "categoryId")
 	public ResponseEntity<List<StoreDTO>> loadStoreListByCategory(long categoryId) {
 		List<StoreDTO> storeList = storeListService.loadStoreListByCategory(categoryId);
 
-		return ResponseEntity.ok().body(storeList);
+		return ResponseEntity.ok(storeList);
 	}
 
 	@GetMapping(params = {"categoryId", "address"})
 	public ResponseEntity<List<StoreDTO>> loadStoreListByCategoryAndAddress(long categoryId, String address) {
 		List<StoreDTO> storeList = storeListService.loadStoreListByCategoryAndAddress(categoryId, address);
 
-		return ResponseEntity.ok().body(storeList);
+		return ResponseEntity.ok(storeList);
 	}
 
 }
