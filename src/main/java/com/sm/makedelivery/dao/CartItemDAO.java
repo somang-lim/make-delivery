@@ -36,13 +36,13 @@ import lombok.RequiredArgsConstructor;
 public class CartItemDAO {
 
 	private static final String cartKey = ":CART";
-	private final RedisTemplate<String, CartItemDTO> redisTemplate;
+	private final RedisTemplate<String, CartItemDTO> cartItemDTORedisTemplate;
 
 
 	public List<CartItemDTO> selectCartList(String userId) {
 		final String key = generateCartKey(userId);
 
-		List<CartItemDTO> cartList = redisTemplate
+		List<CartItemDTO> cartList = cartItemDTORedisTemplate
 			.opsForList()
 			.range(key, 0, -1);
 
@@ -56,19 +56,19 @@ public class CartItemDAO {
 	public void insertMenu(String userId, CartItemDTO cart) {
 		final String key = generateCartKey(userId);
 
-		redisTemplate.opsForList().rightPush(key, cart);
+		cartItemDTORedisTemplate.opsForList().rightPush(key, cart);
 	}
 
 	public void deleteMenuList(String userId) {
 		final String key = generateCartKey(userId);
 
-		redisTemplate.delete(key);
+		cartItemDTORedisTemplate.delete(key);
 	}
 
 	public List<CartItemDTO> getCartAndDelete(String userId) {
 		final String key = generateCartKey(userId);
 
-		List<Object> cartListObject = redisTemplate.execute(
+		List<Object> cartListObject = cartItemDTORedisTemplate.execute(
 			new SessionCallback<List<Object>>() {
 				@Override
 				public List<Object> execute(RedisOperations redisOperations) throws DataAccessException {
@@ -96,10 +96,10 @@ public class CartItemDAO {
 	public void insertMenuList(String userId, List<CartItemDTO> cartList) {
 		final String key = generateCartKey(userId);
 
-		RedisSerializer keySerializer = redisTemplate.getStringSerializer();
-		RedisSerializer valueSerializer = redisTemplate.getValueSerializer();
+		RedisSerializer keySerializer = cartItemDTORedisTemplate.getStringSerializer();
+		RedisSerializer valueSerializer = cartItemDTORedisTemplate.getValueSerializer();
 
-		redisTemplate.executePipelined( (RedisCallback<Object>) RedisConnection -> {
+		cartItemDTORedisTemplate.executePipelined( (RedisCallback<Object>) RedisConnection -> {
 			cartList.forEach(cart -> {
 				RedisConnection.rPush(keySerializer.serialize(key), valueSerializer.serialize(cart));
 			});

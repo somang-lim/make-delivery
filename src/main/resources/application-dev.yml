@@ -7,7 +7,9 @@ spring:
   redis:
     host: localhost
     password: 0987
-    port: 6379
+    session.port: 6379
+    cache.port: 6389
+    cart.port: 6399
 
 mybatis:
   # mapper가 위치한 경로 설정

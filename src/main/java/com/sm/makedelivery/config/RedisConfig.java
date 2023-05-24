@@ -23,18 +23,44 @@ public class RedisConfig {
 	@Value("${spring.redis.host}")
 	private String redisHost;
 
-	@Value("${spring.redis.port}")
-	private int redisPort;
+	@Value("${spring.redis.session.port}")
+	private int redisSessionPort;
+
+	@Value("${spring.redis.cache.port}")
+	private int redisCachePort;
+
+	@Value("${spring.redis.cart.port}")
+	private int redisCartPort;
 
 	@Value("${spring.redis.password}")
 	private String password;
 
 
-	@Bean
-	public RedisConnectionFactory redisConnectionFactory() {
+	@Bean({"redisConnectionFactory", "redisSessionConnectionFactory"})
+	public RedisConnectionFactory redisSessionConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
 		redisStandaloneConfiguration.setHostName(redisHost);
-		redisStandaloneConfiguration.setPort(redisPort);
+		redisStandaloneConfiguration.setPort(redisSessionPort);
+		redisStandaloneConfiguration.setPassword(password);
+
+		return new LettuceConnectionFactory(redisStandaloneConfiguration);
+	}
+
+	@Bean
+	public RedisConnectionFactory redisCacheConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setHostName(redisHost);
+		redisStandaloneConfiguration.setPort(redisCachePort);
+		redisStandaloneConfiguration.setPassword(password);
+
+		return new LettuceConnectionFactory(redisStandaloneConfiguration);
+	}
+
+	@Bean
+	public RedisConnectionFactory redisCartConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setHostName(redisHost);
+		redisStandaloneConfiguration.setPort(redisCartPort);
 		redisStandaloneConfiguration.setPassword(password);
 
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
@@ -55,9 +81,22 @@ public class RedisConfig {
 			);
 
 		return RedisCacheManager.RedisCacheManagerBuilder
-			.fromConnectionFactory(redisConnectionFactory())
+			.fromConnectionFactory(redisCacheConnectionFactory())
 			.cacheDefaults(redisCacheConfiguration)
 			.build();
+	}
+
+	@Bean
+	public RedisTemplate<String, Object> redisTemplate() {
+		GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+
+		redisTemplate.setConnectionFactory(redisSessionConnectionFactory());
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		redisTemplate.setValueSerializer(genericJackson2JsonRedisSerializer);
+
+		return redisTemplate;
 	}
 
 	@Bean
@@ -66,29 +105,11 @@ public class RedisConfig {
 
 		RedisTemplate<String, CartItemDTO> redisTemplate = new RedisTemplate<>();
 
-		redisTemplate.setConnectionFactory(redisConnectionFactory());
+		redisTemplate.setConnectionFactory(redisCartConnectionFactory());
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
 		redisTemplate.setValueSerializer(genericJackson2JsonRedisSerializer);
 
 		return redisTemplate;
-	}
-
-	@Bean
-	public StringRedisTemplate stringRedisTemplate() {
-		StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
-
-		stringRedisTemplate.setConnectionFactory(redisConnectionFactory());
-		stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
-		stringRedisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-		stringRedisTemplate.setDefaultSerializer(new StringRedisSerializer());
-		stringRedisTemplate.afterPropertiesSet();
-
-		return stringRedisTemplate;
-	}
-
-	@Bean
-	public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
-		return new GenericJackson2JsonRedisSerializer();
 	}
 
 }
