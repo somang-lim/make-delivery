@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.sm.makedelivery.dto.StoreDTO;
+import com.sm.makedelivery.dto.StoreInfoDTO;
 
 @Mapper
 public interface StoreMapper {
@@ -20,5 +21,7 @@ public interface StoreMapper {
 	void closeMyStore(long storeId);
 
 	void openMyStore(long storeId);
+
+	StoreInfoDTO selectStoreInfo(long storeId);
 
 }

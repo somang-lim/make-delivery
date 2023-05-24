@@ -1,22 +1,29 @@
 package com.sm.makedelivery.service;
 
+import static com.sm.makedelivery.dto.PayDTO.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.sm.makedelivery.dao.CartItemDAO;
 import com.sm.makedelivery.dto.CartItemDTO;
-import com.sm.makedelivery.dto.CartOptionDTO;
 import com.sm.makedelivery.dto.OrderDTO;
 import com.sm.makedelivery.dto.OrderDTO.OrderStatus;
+import com.sm.makedelivery.dto.OrderDetailDTO;
 import com.sm.makedelivery.dto.OrderMenuDTO;
 import com.sm.makedelivery.dto.OrderMenuOptionDTO;
+import com.sm.makedelivery.dto.OrderReceiptDTO;
+import com.sm.makedelivery.dto.OrderStoreDetailDTO;
+import com.sm.makedelivery.dto.PayDTO;
+import com.sm.makedelivery.dto.StoreInfoDTO;
 import com.sm.makedelivery.dto.UserInfoDTO;
 import com.sm.makedelivery.mapper.OrderMapper;
-import com.sm.makedelivery.mapper.OrderMenuMapper;
-import com.sm.makedelivery.mapper.OrderMenuOptionMapper;
+import com.sm.makedelivery.mapper.StoreMapper;
 import com.sm.makedelivery.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -29,20 +36,35 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderService {
 
 	private final OrderMapper orderMapper;
-	private final OrderMenuMapper orderMenuMapper;
-	private final OrderMenuOptionMapper orderMenuOptionMapper;
 	private final UserMapper userMapper;
+	private final StoreMapper storeMapper;
+	private final OrderTransactionService orderTransactionService;
 	private final CartItemDAO cartItemDAO;
 
 
 	@Transactional
-	public void registerOrder(String userId, long storeId) {
-		UserInfoDTO userInfo = userMapper.selectUserInfo(userId);
-		OrderDTO order = getOrder(userInfo, storeId);
-		orderMapper.insertOrder(order);
+	public OrderReceiptDTO registerOrder(String userId, long storeId, PayType payType) {
+		UserInfoDTO user = userMapper.selectUserInfo(userId);
+		OrderDTO order = getOrder(user, storeId);
 
-		List<CartItemDTO> cartList = cartItemDAO.selectCartList(userId);
-		registerOrderMenu(cartList, order.getId());
+		List<CartItemDTO> cartList;
+		List<OrderMenuDTO> orderMenuList = new ArrayList<>();
+		List<OrderMenuOptionDTO> orderMenuOptionList = new ArrayList<>();
+		OrderReceiptDTO orderReceipt;
+
+		cartList = cartItemDAO.getCartAndDelete(userId);
+
+		restoreCartListOnOrderRollback(userId, cartList);
+
+		long totalPrice = orderTransactionService.order(order, cartList, orderMenuList, orderMenuOptionList);
+
+		orderTransactionService.pay(payType, totalPrice, order.getId());
+		orderMapper.completeOrder(totalPrice, order.getId(), OrderStatus.COMPLETE_ORDER);
+		OrderDTO completeOrder = orderMapper.selectOrder(order.getId());
+
+		orderReceipt = getOrderReceipt(completeOrder, cartList, totalPrice, storeId, user);
+
+		return orderReceipt;
 	}
 
 	private OrderDTO getOrder(UserInfoDTO userInfo, long storeId) {
@@ -56,39 +78,42 @@ public class OrderService {
 		return order;
 	}
 
-	private void registerOrderMenu(List<CartItemDTO> cartList, long orderId) {
-		List<OrderMenuDTO> orderMenuList = new ArrayList<>();
-		List<OrderMenuOptionDTO> orderMenuOptionList = new ArrayList<>();
-
-		long totalPrice = 0;
-
-		for (CartItemDTO item : cartList) {
-			totalPrice += item.getPrice() * item.getCount();
-
-			OrderMenuDTO orderMenu = OrderMenuDTO.builder()
-				.orderId(orderId)
-				.menuId(item.getMenuId())
-				.count(item.getCount())
-				.build();
-
-			orderMenuList.add(orderMenu);
-
-			for (CartOptionDTO option : item.getOptionList()) {
-				totalPrice += option.getPrice();
-
-				OrderMenuOptionDTO orderMenuOption = OrderMenuOptionDTO.builder()
-					.optionId(option.getOptionId())
-					.menuId(item.getMenuId())
-					.orderId(orderId)
-					.build();
-
-				orderMenuOptionList.add(orderMenuOption);
+	private void restoreCartListOnOrderRollback(String userId, List<CartItemDTO> cartList) {
+		TransactionSynchronizationManager.registerSynchronization(
+			new TransactionSynchronization() {
+				@Override
+				public void afterCompletion(int status) {
+					if (status == STATUS_ROLLED_BACK) {
+						cartItemDAO.insertMenuList(userId, cartList);
+					}
+				}
 			}
-		}
+		);
+	}
 
-		orderMenuMapper.insertOrderMenu(orderMenuList);
-		orderMenuOptionMapper.insertOrderMenuOption(orderMenuOptionList);
-		orderMapper.updateTotalPrice(totalPrice, orderId);
+	private OrderReceiptDTO getOrderReceipt(OrderDTO order, List<CartItemDTO> cartList, long totalPrice, long storeId, UserInfoDTO userInfo) {
+		StoreInfoDTO storeInfo = storeMapper.selectStoreInfo(storeId);
+
+		return OrderReceiptDTO.builder()
+			.orderId(order.getId())
+			.orderStatus(order.getOrderStatus())
+			.userInfo(userInfo)
+			.totalPrice(totalPrice)
+			.storeInfo(storeInfo)
+			.cartList(cartList)
+			.build();
+	}
+
+	public OrderDetailDTO loadOrder(long orderId) {
+		OrderDetailDTO orderDetail = orderMapper.selectDetailOrder(orderId);
+
+		return orderDetail;
+	}
+
+	public List<OrderStoreDetailDTO> loadStoreOrder(long storeId) {
+		List<OrderStoreDetailDTO> orderStoreDetailList = orderMapper.selectDetailStoreOrder(storeId);
+
+		return orderStoreDetailList;
 	}
 
 }

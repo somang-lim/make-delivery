@@ -24,6 +24,11 @@
         (SELECT name FROM STORE WHERE id = #{storeId} AND owner_id = #{ownerId})
     </select>
 
+    <select id="selectStoreInfo" resultType="com.sm.makedelivery.dto.StoreInfoDTO">
+        SELECT id AS storeId, name, phone, address
+        FROM STORE WHERE id = #{storeId}
+    </select>
+
     <update id="closeMyStore">
         UPDATE STORE SET open_status= 'closed'
         WHERE id = #{storeId}
