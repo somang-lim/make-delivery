@@ -14,29 +14,48 @@
         WHERE id = #{orderId}
     </update>
 
+    <update id="approveOrder">
+        UPDATE `ORDER` SET order_status = #{orderStatus}
+        WHERE id = #{orderId}
+    </update>
+
+    <update id="updateStandbyOrderToDelivering">
+        UPDATE `ORDER` SET order_status = #{orderStatus}
+        WHERE id = #{orderId}
+    </update>
+
+    <update id="finishDeliveringOrder">
+        UPDATE `ORDER` SET order_status = #{orderStatus}
+        WHERE id = #{orderId}
+    </update>
+
     <select id="selectOrder" resultType="com.sm.makedelivery.dto.OrderDTO">
         SELECT id, created_at, order_status, address, user_id, store_id, total_price
         FROM `ORDER` WHERE id = #{orderId}
     </select>
 
-    <resultMap id="orderDetail" type="com.sm.makedelivery.dto.OrderDetailDTO">
+    <resultMap id="orderReceipt" type="com.sm.makedelivery.dto.OrderReceiptDTO">
         <constructor>
             <idArg column="orderId" javaType="Long"/>
             <arg column="orderStatus" javaType="String"/>
-            <arg column="userId" javaType="String"/>
             <arg column="totalPrice" javaType="Long"/>
         </constructor>
         <id property="orderId" column="orderId"/>
         <result property="orderStatus" column="orderStatus"/>
-        <result property="userId" column="userId"/>
         <result property="totalPrice" column="totalPrice"/>
+        <collection property="userInfo" ofType="com.sm.makedelivery.dto.UserInfoDTO">
+            <id property="id" column="userId"/>
+            <result property="name" column="userName"/>
+            <result property="phone" column="userPhone"/>
+            <result property="address" column="userAddress"/>
+        </collection>
         <collection property="storeInfo" ofType="com.sm.makedelivery.dto.StoreInfoDTO">
             <id property="storeId" column="storeId"/>
             <result property="name" column="storeName"/>
             <result property="phone" column="storePhone"/>
             <result property="address" column="storeAddress"/>
         </collection>
-        <collection property="menuList" ofType="com.sm.makedelivery.dto.OrderDetailMenuDTO">
+        <collection property="cartList" ofType="com.sm.makedelivery.dto.CartItemDTO">
             <constructor>
                 <idArg column="menuId" javaType="Long"/>
                 <arg column="menuName" javaType="String"/>
@@ -44,27 +63,30 @@
                 <arg column="menuCount" javaType="Long"/>
             </constructor>
             <id property="menuId" column="menuId"/>
-            <result property="menuName" column="menuName"/>
-            <result property="menuPrice" column="menuPrice"/>
-            <result property="menuCount" column="menuCount"/>
-            <collection property="optionList" ofType="com.sm.makedelivery.dto.OrderDetailOptionDTO">
+            <result property="name" column="menuName"/>
+            <result property="price" column="menuPrice"/>
+            <result property="count" column="menuCount"/>
+            <collection property="optionList" ofType="com.sm.makedelivery.dto.CartOptionDTO">
                 <constructor>
                     <idArg column="optionId" javaType="Long"/>
                     <arg column="optionName" javaType="String"/>
                     <arg column="optionPrice" javaType="Long"/>
                 </constructor>
                 <id property="optionId" column="optionId"/>
-                <result property="optionName" column="optionName"/>
-                <result property="optionPrice" column="optionPrice"/>
+                <result property="name" column="optionName"/>
+                <result property="price" column="optionPrice"/>
             </collection>
         </collection>
     </resultMap>
 
-    <select id="selectDetailOrder" resultMap="orderDetail">
+    <select id="selectOrderReceipt" resultMap="orderReceipt">
         SELECT
             O.id AS orderId,
             O.order_status AS orderStatus,
             O.user_id AS userId,
+            U.name AS userName,
+            U.phone AS userPhone,
+            U.address AS userAddress,
             O.total_price AS totalPrice,
             O.store_id AS storeId,
             S.name AS storeName,
@@ -83,6 +105,7 @@
              JOIN ORDER_MENU_OPTION O_M_O ON O_M.order_id = O_M_O.order_id
              JOIN MENU_OPTION M_O ON M_O.id = O_M_O.option_id
              JOIN STORE S ON O.store_id = S.id
+             JOIN USER U ON O.user_id = U.id
         WHERE O.id = #{orderId}
     </select>
 

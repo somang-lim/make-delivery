@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.sm.makedelivery.dto.OrderDTO;
+import com.sm.makedelivery.dto.OrderDTO.OrderStatus;
+import com.sm.makedelivery.dto.OrderReceiptDTO;
 import com.sm.makedelivery.dto.StoreDTO;
 import com.sm.makedelivery.exception.StoreNameAlreadyExistsException;
+import com.sm.makedelivery.mapper.OrderMapper;
 import com.sm.makedelivery.mapper.StoreMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class StoreService {
 
 	private final StoreMapper storeMapper;
+	private final OrderMapper orderMapper;
+	private final DeliveryService deliveryService;
 
 
 	@Transactional
@@ -73,6 +79,13 @@ public class StoreService {
 	@Transactional
 	public void openMyStore(long storeId) {
 		storeMapper.openMyStore(storeId);
+	}
+
+	@Transactional
+	public void approveOrder(long orderId) {
+		orderMapper.approveOrder(orderId, OrderStatus.APPROVED_ORDER);
+		OrderReceiptDTO orderReceipt = orderMapper.selectOrderReceipt(orderId);
+		deliveryService.registerStandbyOrderWhenOrderApprove(orderId, orderReceipt);
 	}
 
 }

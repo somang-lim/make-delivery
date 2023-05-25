@@ -96,7 +96,7 @@ public class OrderService {
 
 		return OrderReceiptDTO.builder()
 			.orderId(order.getId())
-			.orderStatus(order.getOrderStatus())
+			.orderStatus(OrderStatus.COMPLETE_ORDER.toString())
 			.userInfo(userInfo)
 			.totalPrice(totalPrice)
 			.storeInfo(storeInfo)
@@ -104,10 +104,10 @@ public class OrderService {
 			.build();
 	}
 
-	public OrderDetailDTO loadOrder(long orderId) {
-		OrderDetailDTO orderDetail = orderMapper.selectDetailOrder(orderId);
+	public OrderReceiptDTO loadOrder(long orderId) {
+		OrderReceiptDTO orderReceipt = orderMapper.selectOrderReceipt(orderId);
 
-		return orderDetail;
+		return orderReceipt;
 	}
 
 	public List<OrderStoreDetailDTO> loadStoreOrder(long storeId) {

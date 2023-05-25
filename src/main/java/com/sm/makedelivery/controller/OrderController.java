@@ -39,8 +39,8 @@ public class OrderController {
 
 	@GetMapping("/{orderId}")
 	@LoginCheck(userLevel = UserLevel.USER)
-	public ResponseEntity<OrderDetailDTO> loadOrder(@PathVariable long orderId) {
-		OrderDetailDTO orderReceipt = orderService.loadOrder(orderId);
+	public ResponseEntity<OrderReceiptDTO> loadOrder(@PathVariable long orderId) {
+		OrderReceiptDTO orderReceipt = orderService.loadOrder(orderId);
 
 		return ResponseEntity.ok(orderReceipt);
 	}
