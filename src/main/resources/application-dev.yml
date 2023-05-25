@@ -10,6 +10,7 @@ spring:
     session.port: 6379
     cache.port: 6389
     cart.port: 6399
+    delivery.port: 6409
 
 mybatis:
   # mapper가 위치한 경로 설정
