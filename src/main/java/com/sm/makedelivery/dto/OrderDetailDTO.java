@@ -13,9 +13,9 @@ public class OrderDetailDTO {
 
 	private final String orderStatus;
 
-	private final String userId;
-
 	private final Long totalPrice;
+
+	private UserInfoDTO userInfo;
 
 	private StoreInfoDTO storeInfo;
 

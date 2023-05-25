@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.sm.makedelivery.dto.OrderDTO;
 import com.sm.makedelivery.dto.OrderDTO.OrderStatus;
-import com.sm.makedelivery.dto.OrderDetailDTO;
+import com.sm.makedelivery.dto.OrderReceiptDTO;
 import com.sm.makedelivery.dto.OrderStoreDetailDTO;
 
 @Mapper
@@ -18,7 +18,14 @@ public interface OrderMapper {
 
 	OrderDTO selectOrder(long orderId);
 
-	OrderDetailDTO selectDetailOrder(long orderId);
+	OrderReceiptDTO selectOrderReceipt(long orderId);
 
 	List<OrderStoreDetailDTO> selectDetailStoreOrder(long storeId);
+
+	void approveOrder(long orderId, OrderStatus orderStatus);
+
+	void updateStandbyOrderToDelivering(long orderId, String id, OrderStatus orderStatus);
+
+	void finishDeliveringOrder(long orderId, OrderStatus orderStatus);
+
 }
