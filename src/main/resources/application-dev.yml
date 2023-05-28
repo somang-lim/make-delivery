@@ -15,3 +15,7 @@ spring:
 mybatis:
   # mapper가 위치한 경로 설정
   mapper-locations: mapper/**/*.xml
+
+firebase:
+  config:
+    path: firebase/firebaseSDK.json

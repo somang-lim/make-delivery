@@ -1,13 +1,13 @@
 package com.sm.makedelivery.dao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisOperations;
@@ -59,7 +59,7 @@ public class DeliveryDAO {
 		String standbyOrdersKey = generateStandbyOrderKey(rider.getAddress());
 		String orderHashKey = generateOrderHashKey(orderId);
 
-		redisTemplate.execute(new SessionCallback<Object>() {
+		redisTemplate.execute(new SessionCallback<>() {
 			@Override
 			public Object execute(RedisOperations redisOperations) throws DataAccessException {
 				redisOperations.watch(standbyOrdersKey);
@@ -86,11 +86,14 @@ public class DeliveryDAO {
 			.get(generateStandbyOrderKey(riderAddress), generateOrderHashKey(orderId));
 	}
 
-	// 라이더들이 자신의 지역에 배차요청을 기다리는 주문 목록을 보는 메소드
+	/*
+		selectStandbyOrderList
+		라이더들이 자신의 지역에 배차요청을 기다리는 주문 목록을 보는 메소드
+	 */
 	public List<String> selectStandbyOrderList(String riderAddress) {
 		List<String> result = new ArrayList<>();
 
-		redisTemplate.execute((RedisCallback<List<String>>)redisConnection -> {
+		redisTemplate.execute((RedisCallback<List<String>>) redisConnection -> {
 			ScanOptions options = ScanOptions.scanOptions().match("*").count(200).build();
 			Cursor<Entry<byte[], byte[]>> entries = redisConnection.hScan(generateStandbyOrderKey(riderAddress).getBytes(), options);
 
@@ -102,6 +105,37 @@ public class DeliveryDAO {
 
 			return result;
 		});
+		return result;
+	}
+
+	/*
+		Redis 명령어 중 keys를 이용하면 모든 키값들을 가져올 수 있지만, 키 값들을 가져오는 동안 lock이 걸립니다.
+		따라서 성능에 영향을 줄 수 있기 떄문에 scan, hscan을 권장합니다.
+		Redis는 싱글스레드로 동작하기 때문에 이처럼 어떤 명령어를 O(n)시간 동안 수행하면서 lock이 걸린다면
+		그 시간동안 keys 명령어를 수행하기 위해 blocking이 되기 때문입니다.
+
+		scan이 시작된 이후 데이터가 추가된다면 전체 순회가 끝날 때까지 추가된 값은 전체 순회에 포함되지 않습니다.
+
+		selectStandbyRiderTokenList : 같은 지역에 출근한 라이더들에게 푸쉬 메시지를 보내기 위해 같은 지역에 출근한 라이더들의 fcm 토큰 값을 전체 스캔하는 메소드
+	 */
+
+	public Set<String> selectStandbyRiderTokenList(String address) {
+		Set<String> result = new HashSet<>();
+
+		redisTemplate.execute((RedisCallback<Set<String>>)redisConnection -> {
+			ScanOptions options = ScanOptions.scanOptions().match("*").count(200).build();
+
+			Cursor<Entry<byte[], byte[]>> entries = redisConnection.hScan(generateStandbyRiderKey(address).getBytes(), options);
+
+			while (entries.hasNext()) {
+				Entry<byte[], byte[]> entry = entries.next();
+				byte[] actualValue = entry.getValue();
+				result.add(new String(actualValue));
+			}
+
+			return result;
+		});
+
 		return result;
 	}
 }
