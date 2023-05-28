@@ -1,5 +1,7 @@
 package com.sm.makedelivery.controller;
 
+import java.io.IOException;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,26 +26,26 @@ public class RiderController {
 
 	@PostMapping("/standby")
 	@LoginCheck(userLevel = UserLevel.RIDER)
-	public void registerStandbyRider(RiderDTO rider) {
-		riderService.registerStandbyRider(rider);
+	public void registerStandbyRider(@PathVariable String riderId) throws IOException {
+		riderService.registerStandbyRider(riderId);
 	}
 
 	@DeleteMapping("/standby")
 	@LoginCheck(userLevel = UserLevel.RIDER)
-	public void deleteStandbyRider(RiderDTO rider) {
-		riderService.deleteStandbyRiderWhenStopWork(rider);
+	public void deleteStandbyRider(@PathVariable String riderId) {
+		riderService.deleteStandbyRiderWhenStopWork(riderId);
 	}
 
 	@PatchMapping("/orders/{orderId}/accept")
 	@LoginCheck(userLevel = UserLevel.RIDER)
-	public void acceptStandbyOrder(@PathVariable long orderId, RiderDTO rider) {
-		riderService.acceptStandbyOrder(orderId, rider);
+	public void acceptStandbyOrder(@PathVariable long orderId, @PathVariable String riderId) {
+		riderService.acceptStandbyOrder(orderId, riderId);
 	}
 
 	@PatchMapping("/orders/{orderId}/finish")
 	@LoginCheck(userLevel = UserLevel.RIDER)
-	public void finishDeliveringOrder(@PathVariable long orderId, RiderDTO rider) {
-		riderService.finishDeliveringOrder(orderId, rider);
+	public void finishDeliveringOrder(@PathVariable long orderId, @PathVariable String riderId) throws IOException {
+		riderService.finishDeliveringOrder(orderId, riderId);
 	}
 
 }

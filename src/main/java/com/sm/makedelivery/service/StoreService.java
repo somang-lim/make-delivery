@@ -1,5 +1,6 @@
 package com.sm.makedelivery.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -11,6 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.sm.makedelivery.dto.OrderDTO;
 import com.sm.makedelivery.dto.OrderDTO.OrderStatus;
 import com.sm.makedelivery.dto.OrderReceiptDTO;
+import com.sm.makedelivery.dto.PushMessageDTO;
 import com.sm.makedelivery.dto.StoreDTO;
 import com.sm.makedelivery.exception.StoreNameAlreadyExistsException;
 import com.sm.makedelivery.mapper.OrderMapper;
@@ -26,6 +28,7 @@ public class StoreService {
 	private final StoreMapper storeMapper;
 	private final OrderMapper orderMapper;
 	private final DeliveryService deliveryService;
+	private final RiderService riderService;
 
 
 	@Transactional
@@ -86,6 +89,16 @@ public class StoreService {
 		orderMapper.approveOrder(orderId, OrderStatus.APPROVED_ORDER);
 		OrderReceiptDTO orderReceipt = orderMapper.selectOrderReceipt(orderId);
 		deliveryService.registerStandbyOrderWhenOrderApprove(orderId, orderReceipt);
+		riderService.sendMessageToStandbyRidersInSameArea(orderReceipt.getStoreInfo().getAddress(), getPushMessage(orderReceipt));
+	}
+
+	private PushMessageDTO getPushMessage(OrderReceiptDTO orderReceipt) {
+		return PushMessageDTO.builder()
+			.title(PushMessageDTO.RIDER_MESSAGE_TITLE)
+			.content(PushMessageDTO.RIDER_MESSAGE_CONTENT)
+			.createdAt(LocalDateTime.now().toString())
+			.orderReceipt(orderReceipt)
+			.build();
 	}
 
 }
