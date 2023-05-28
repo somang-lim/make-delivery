@@ -84,7 +84,9 @@ public class RiderService {
 	}
 
 	@Transactional
-	public void finishDeliveringOrder(long orderId, RiderDTO rider) {
+	public void finishDeliveringOrder(long orderId, String riderId) throws IOException {
+		RiderDTO rider = setStartStandbyRider(riderId);
+
 		orderMapper.finishDeliveringOrder(orderId, OrderStatus.COMPLETE_DELIVERY);
 		deliveryDAO.insertStandbyRiderWhenStartWork(rider);
 	}

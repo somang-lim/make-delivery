@@ -44,8 +44,8 @@ public class RiderController {
 
 	@PatchMapping("/orders/{orderId}/finish")
 	@LoginCheck(userLevel = UserLevel.RIDER)
-	public void finishDeliveringOrder(@PathVariable long orderId, RiderDTO rider) {
-		riderService.finishDeliveringOrder(orderId, rider);
+	public void finishDeliveringOrder(@PathVariable long orderId, @PathVariable String riderId) throws IOException {
+		riderService.finishDeliveringOrder(orderId, riderId);
 	}
 
 }
