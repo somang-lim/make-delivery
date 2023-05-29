@@ -23,10 +23,17 @@ public class PayServiceFactory {
 		PayService payService;
 
 		switch (payType) {
-			case CARD -> payService = cardPayService;
-			case NAVER_PAY -> payService = naverPayService;
-			case DEPOSIT -> payService = depositPayService;
-			default -> throw new IllegalArgumentException();
+			case CARD:
+				payService = cardPayService;
+				break;
+			case NAVER_PAY:
+				payService = naverPayService;
+				break;
+			case DEPOSIT:
+				payService = depositPayService;
+				break;
+			default:
+				throw new IllegalArgumentException();
 		}
 
 		return payService;
