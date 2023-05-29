@@ -36,5 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-resources/application-dev.yml
+application-dev.yml
 firebaseSDK.json
